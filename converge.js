@@ -266,8 +266,10 @@
     this.chain[current].run();
   };
 
-  window.converge = function(els) {
-    return new RootWrapper(els);
+  window.converge = {
+    on: function(els) {
+      return new RootWrapper(els);
+    }
   };
 
 }(window));
