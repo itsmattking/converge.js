@@ -44,6 +44,9 @@
   }
 
   function intoArray(thing) {
+    if (typeof thing === 'undefined') {
+      thing = [];
+    }
     if (thing instanceof NodeList) {
       thing = Array.prototype.slice.call(thing);
     } else if (!(thing instanceof Array)) {
@@ -80,7 +83,7 @@
         i = 0;
       }
     }
-    return lastParent;
+    return lastParent || document.body;
   }
 
   function EventContainer(opts) {
@@ -98,16 +101,31 @@
   };
 
   function Root(els) {
-    if (typeof els === 'string') {
-      els = document.querySelectorAll(els);
-    }
+    this.processElements(els);
     this.classes = [];
     this.callbacks = [];
     this.timings = [];
-    this.els = intoArray(els);
-    this.parent = findCommonParent(this.els);
     return this;
   }
+
+  Root.prototype.processElements = function(els) {
+    if (typeof els === 'string') {
+      var found = document.querySelectorAll(els);
+      if (found.length === 0) {
+        this.els = [];
+        if ((typeof this.deferredEls === 'undefined')) {
+          this.deferredEls = els;
+        } else {
+          this.deferredEls = null;
+        }
+      } else {
+        this.els = intoArray(found);
+      }
+    } else {
+      this.els = intoArray(els);
+    }
+    this.parent = findCommonParent(this.els);
+  };
 
   Root.prototype.alter = function(cls) {
     if (arguments.length > 1) {
@@ -133,6 +151,10 @@
   };
 
   Root.prototype.run = function(current) {
+
+    if (this.deferredEls) {
+      this.processElements(this.deferredEls);
+    }
 
     current = current || 0;
 
@@ -213,9 +235,41 @@
 
   };
 
+  function Preloader(src) {
+    this.src = src;
+    this.callbacks = [];
+  }
+
+  Preloader.prototype.then = function(fn) {
+    this.callbacks.push(fn);
+  };
+
+  Preloader.prototype.run = function() {
+    this.img = new window.Image();
+
+    var self = this;
+
+    var runCallbacks = function() {
+      for (var i = 0; i < self.callbacks.length; i++) {
+        self.callbacks[i](this);
+      }
+    };
+
+    this.img.onload = this.img.onerror = runCallbacks;
+
+    this.img.src = this.src;
+  };
+
   function RootWrapper(els) {
     this.chain = [];
-    this.on(els);
+    if (els) {
+      this.on(els);
+    }
+    return this;
+  };
+
+  RootWrapper.prototype.preload = function(src) {
+    this.chain.push(new Preloader(src));
     return this;
   };
 
@@ -267,6 +321,10 @@
   };
 
   window.converge = {
+    preload: function(src) {
+      var wrapper = new RootWrapper();
+      return wrapper.preload(src);
+    },
     on: function(els) {
       return new RootWrapper(els);
     }
