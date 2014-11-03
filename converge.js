@@ -24,16 +24,21 @@
     return false;
   }());
   
-  function findTransitionProperties(els) {
+  function findTransitionProperties(el) {
+    var prop = window.getComputedStyle(el)['transition-property'];
+    if (prop) {
+      prop = prop.split(',').map(function(s) { return s.replace(/\s+/, ''); });
+    }
+    return prop || [];
+  }
+
+  function findAllTransitionProperties(els) {
     var props = [];
     for (var i = 0; i < els.length; i++) {
-      var prop = window.getComputedStyle(els[i])['transition-property'];
-      if (prop) {
-        prop = prop.split(',').map(function(s) { return s.replace(/\s+/, ''); });
-        for (var j = 0; j < prop.length; j++) {
-          if (props.indexOf(prop[j]) === -1) {
-            props.push(prop[j]);
-          }
+      var prop = findTransitionProperties(els[i]);
+      for (var j = 0; j < prop.length; j++) {
+        if (props.indexOf(prop[j]) === -1) {
+          props.push(prop[j]);
         }
       }
     }
@@ -181,7 +186,6 @@
         timing = this.timings[current] || [0, 0],
         els = this.els,
         len = this.els.length,
-        transitionsToFulfill = findTransitionProperties(els),
         self = this;
 
     var nextRun = function() {
@@ -216,11 +220,12 @@
     var hasFulfilledAllTransitions = function(e) {
       if (!e.target.fulfilledTransitions) {
         e.target.fulfilledTransitions = [];
+        e.target.transitionsToFulfill = findTransitionProperties(e.target);
       }
       if (e.target.fulfilledTransitions.indexOf(e.propertyName) === -1) {
         e.target.fulfilledTransitions.push(e.propertyName);
       }
-      if (e.target.fulfilledTransitions.length === transitionsToFulfill.length) {
+      if (e.target.fulfilledTransitions.length === e.target.transitionsToFulfill.length) {
         e.target.fulfilledTransitions = [];
         return true;
       } else {
