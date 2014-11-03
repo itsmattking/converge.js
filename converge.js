@@ -1,22 +1,32 @@
 (function(window) {
 
   var TRANSITION_EVENT = 'transitionend';
+  var TRANSITION_PROPERTY = 'transition-property';
 
   var transitionable = (function() {
     var b = document.body || document.documentElement,
         s = b.style,
-        p = 'transition';
+        p = 'transition',
+        v = ['Moz', 'webkit', 'Webkit', 'Khtml', 'O', 'ms'];
 
     if (typeof s[p] === 'string') {
+      var computed = window.getComputedStyle(b);
+      if (typeof b[TRANSITION_PROPERTY] !== 'string') {
+        for (var i = 0; i < v.length; i++) {
+          if (typeof computed[v[i] + 'TransitionProperty'] === 'string') {
+            TRANSITION_PROPERTY = v[i] + 'TransitionProperty';
+          }
+        }
+      }
       return true;
     }
 
-    var v = ['Moz', 'webkit', 'Webkit', 'Khtml', 'O', 'ms'];
     p = p.charAt(0).toUpperCase() + p.substr(1);
 
     for (var i = 0; i < v.length; i++) {
       if (typeof s[v[i] + p] === 'string') {
         TRANSITION_EVENT = v[i] + p + 'End';
+        TRANSITION_PROPERTY = v[i] + 'TransitionProperty';
         return true;
       }
     }
@@ -25,11 +35,18 @@
   }());
   
   function findTransitionProperties(el) {
-    var prop = window.getComputedStyle(el)['transition-property'];
+    var out = [],
+        prop = window.getComputedStyle(el)[TRANSITION_PROPERTY];
     if (prop) {
-      prop = prop.split(',').map(function(s) { return s.replace(/\s+/, ''); });
+      var props = prop.split(',');
+      for (var i = 0; i < props.length; i++) {
+        var p = props[i].replace(/\s+/, '');
+        if (p !== 'all') {
+          out.push(p);
+        }
+      }
     }
-    return prop || [];
+    return out;
   }
 
   function findAllTransitionProperties(els) {
