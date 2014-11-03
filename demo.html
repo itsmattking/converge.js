@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>converge.js demo</title>
+    <script src="converge.js"></script>
+    <style type="text/css">
+     body {
+       background: #111;
+     }
+     .entity {
+       display: block;
+       position: absolute;
+       transition-property: opacity, transform;
+       transition-duration: .4s, 1s;
+       transition-timing-function: ease-in-out, cubic-bezier(0.175, 0.885, 0.320, 1.275); 
+       background-color: aquamarine;
+       transform: translateY(0) scale(0);
+       opacity: 0;
+     }
+     .open {
+       transform: translateY(0) scale(1);
+       opacity: 0.4;
+     }
+     .bye {
+       transition-duration: 1s, 1s;
+       transition-timing-function: ease-in-out, cubic-bezier(0.600, -0.280, 0.735, 0.045);
+       transform: translateY(-500px) scale(1);
+       opacity: 0;
+     }
+    </style>
+  </head>
+  <body>
+    <textarea name="code"></textarea>
+    <script src="demo.js"></script>
+  </body>
+</html>

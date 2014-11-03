@@ -24,6 +24,22 @@
     return false;
   }());
   
+  function findTransitionProperties(els) {
+    var props = [];
+    for (var i = 0; i < els.length; i++) {
+      var prop = window.getComputedStyle(els[i])['transition-property'];
+      if (prop) {
+        prop = prop.split(',').map(function(s) { return s.replace(/\s+/, ''); });
+        for (var j = 0; j < prop.length; j++) {
+          if (props.indexOf(prop[j]) === -1) {
+            props.push(prop[j]);
+          }
+        }
+      }
+    }
+    return props;
+  }
+
   function cleanArray(arr) {
     var newarr = [];
     for (var i = 0; i < arr.length; i++) {
@@ -165,13 +181,14 @@
         timing = this.timings[current] || [0, 0],
         els = this.els,
         len = this.els.length,
+        transitionsToFulfill = findTransitionProperties(els),
         self = this;
 
     var nextRun = function() {
       if (current + 1 < total) {
         self.run(current + 1);
       } else {
-        flushCallbacks();
+        flushCallbacks(current + 1);
       }
     };
 
@@ -179,8 +196,8 @@
       nextRun: nextRun
     });
 
-    var flushCallbacks = function() {
-      for (var i = current; i < self.callbacks.length; i++) {
+    var flushCallbacks = function(start) {
+      for (var i = start; i < self.callbacks.length; i++) {
         for (var j = 0; j < self.callbacks[i].length; j++) {
           self.callbacks[i][j](eventContainer, els);
         }
@@ -196,9 +213,25 @@
       }
     };
 
+    var hasFulfilledAllTransitions = function(e) {
+      if (!e.target.fulfilledTransitions) {
+        e.target.fulfilledTransitions = [];
+      }
+      if (e.target.fulfilledTransitions.indexOf(e.propertyName) === -1) {
+        e.target.fulfilledTransitions.push(e.propertyName);
+      }
+      if (e.target.fulfilledTransitions.length === transitionsToFulfill.length) {
+        e.target.fulfilledTransitions = [];
+        return true;
+      } else {
+        return false;
+      }
+    };
+
     var transitionCallback = function(e) {
       if (els.indexOf(e.target) !== -1 &&
-         isInArray(cleanArray(classes), Array.prototype.slice.call(e.target.classList))) {
+          isInArray(cleanArray(classes), Array.prototype.slice.call(e.target.classList)) &&
+          hasFulfilledAllTransitions(e)) {
         len--;
         if (len <= 0) {
           parent.removeEventListener(TRANSITION_EVENT, transitionCallback);
