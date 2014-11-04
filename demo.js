@@ -26,7 +26,12 @@
     for (var i = 0; i < elements.length; i++) {
       parent.appendChild(elements[i]);
     }
-    converge.on(elements).alter('open').stagger(50).thenOn(elements).alter('bye').stagger(50, 3000).then(function() {
+    var clas = ['bye', 'seeya', 'splode'];
+    var num = Math.ceil(Math.random()*clas.length-1);
+    console.log(num);
+    var cls = clas[num];
+    console.log(cls);
+    converge.on(elements).alter('open').stagger(50).thenOn(elements).alter(cls).stagger(50, 3000).then(function() {
       while (elements.length) {
         parent.removeChild(elements.shift());
       }

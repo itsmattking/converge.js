@@ -85,7 +85,8 @@
     if (typeof thing === 'undefined') {
       thing = [];
     }
-    if (thing instanceof NodeList) {
+    if ((thing instanceof NodeList) ||
+        window.jQuery && (thing instanceof window.jQuery)) {
       thing = Array.prototype.slice.call(thing);
     } else if (!(thing instanceof Array)) {
       thing = [thing];
@@ -129,7 +130,7 @@
     this.waitForContinue = false;
   }
   
-  EventContainer.prototype.continue = function() {
+  EventContainer.prototype.resume = function() {
     this.waitForContinue = false;
     return this.nextRun();
   };
