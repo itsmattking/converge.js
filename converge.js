@@ -53,7 +53,7 @@
     if (el.classList) {
       el.classList.add(cls);
     } else {
-      el.className += classesFrom(el).concat(cls).join(' ');
+      el.className = classesFrom(el).concat(cls).join(' ');
     }
   }
 
@@ -340,7 +340,7 @@
         total = src.length,
         self = this;
 
-    var onload = function() {
+    var handleImageLoad = function() {
       runIndividualCallbacks(this.originalSrc, this);
       total--;
       if (total <= 0) {
@@ -362,7 +362,8 @@
 
     var loadImage = function(src) {
       var img = new window.Image();
-      img.onload = img.onerror = onload;
+      img.onload = handleImageLoad;
+      img.onerror = handleImageLoad;
       img.originalSrc = src;
       img.src = src;
     };
