@@ -1,4 +1,3 @@
-
 (function(window) {
 
   var TRANSITION_EVENT = 'transitionend';
@@ -99,19 +98,6 @@
     return true;
   }
 
-  function intoArray(thing) {
-    if (typeof thing === 'undefined') {
-      thing = [];
-    }
-    if ((thing instanceof NodeList) ||
-        window.jQuery && (thing instanceof window.jQuery)) {
-      thing = Array.prototype.slice.call(thing);
-    } else if (!(thing instanceof Array)) {
-      thing = [thing];
-    }
-    return thing;
-  }
-
   function parentAt(el, level) {
     for (var i = 0; i < level; i++) {
       if (!el.parentNode || el === document.body) {
@@ -184,8 +170,15 @@
     this.parent = findCommonParent(this.els);
   };
 
-  Root.prototype.alter = function(cls) {
-    this.classes.push(Array.prototype.slice.call(arguments));
+  Root.prototype.alter = function() {
+    var args = Array.prototype.slice.call(arguments),
+        out = [];
+    for (var i = 0; i < args.length; i++) {
+      if (typeof args[i] === 'string') {
+        out.push(args[i]);
+      }
+    }
+    this.classes.push(out);
     return this;
   };
 
@@ -194,12 +187,25 @@
   };
 
   Root.prototype.then = function(fn) {
-    this.callbacks.push(Array.prototype.slice.call(arguments));
+    var args = Array.prototype.slice.call(arguments),
+        out = [];
+    for (var i = 0; i < args.length; i++) {
+      if (typeof args[i] === 'function') {
+        out.push(args[i]);
+      }
+    }
+    this.callbacks.push(out);
     return this;
   };
 
   Root.prototype.stagger = function(ms, buff) {
-    this.timings.push([(ms || 0), (buff || 0)]);
+    if (!transitionable) {
+      ms = buff = 0;
+    } else {
+      ms = ms || 0;
+      buff = buff || 0;
+    }
+    this.timings.push([ms, buff]);
     return this;
   };
 
@@ -257,7 +263,8 @@
       if (e.target.fulfilledTransitions.indexOf(e.propertyName) === -1) {
         e.target.fulfilledTransitions.push(e.propertyName);
       }
-      if (e.target.fulfilledTransitions.length === e.target.transitionsToFulfill.length) {
+      if (e.target.transitionsToFulfill.length === 0 ||
+          (e.target.fulfilledTransitions.length >= e.target.transitionsToFulfill.length)) {
         e.target.fulfilledTransitions = [];
         return true;
       } else {
@@ -283,13 +290,13 @@
           return function() {
             for (var j = 0; j < classes.length; j++) {
               if (classes[j].indexOf('-') === 0) {
-                addClass(el, classes[j].slice(1));
+                removeClass(el, classes[j].slice(1));
               } else {
-                removeClass(el, classes[j]);
+                addClass(el, classes[j]);
               }
             }
           };
-        }(els[i]), timing[1] + (i * timing[0]));
+        }(els[i]), (i * timing[0]) + timing[1]);
       }
     };
 
@@ -305,8 +312,15 @@
 
   };
 
-  function Preloader(src) {
-    this.src = intoArray(src);
+  function Preloader() {
+    var args = Array.prototype.slice.call(arguments),
+        out = [];
+    for (var i = 0; i < args.length; i++) {
+      if (typeof args[i] === 'string') {
+        out.push(args[i]);
+      }
+    }
+    this.src = out;
     this.callbacks = [];
     this.individualCallbacks = [];
   }
@@ -346,12 +360,12 @@
       }
     };
 
-    function loadImage(src) {
+    var loadImage = function(src) {
       var img = new window.Image();
       img.onload = img.onerror = onload;
       img.originalSrc = src;
       img.src = src;
-    }
+    };
 
     if (src.length) {
       for (var i = 0; i < src.length; i++) {
