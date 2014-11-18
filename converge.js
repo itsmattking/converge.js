@@ -61,13 +61,9 @@
     if (el.classList) {
       el.classList.remove(cls);
     } else {
-      var classes = classesFrom(el);
-      for (var i = 0; i < classes.length; i++) {
-        if (classes[i] === cls) {
-          classes.splice(i, 1);
-        }
-      }
-      el.className = classes.join(' ');
+      el.className = cleanArray(classesFrom(el), function(item) {
+        return item !== cls;
+      }).join(' ');
     }
   }
 
