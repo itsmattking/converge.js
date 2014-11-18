@@ -79,14 +79,20 @@
     }
   }
 
-  function cleanArray(arr) {
+  function cleanArray(arr, fn) {
     var newarr = [];
     for (var i = 0; i < arr.length; i++) {
-      if (arr[i].indexOf('-') === -1) {
+      if (fn.call(arr[i], arr[i]) === true) {
         newarr.push(arr[i]);
       }
     }
     return newarr;
+  }
+
+  function removeNegationClasses(arr) {
+    return cleanArray(arr, function(item) {
+      return item.indexOf('-') === -1;
+    });
   }
 
   function isInArray(arr1, arr2) {
@@ -171,14 +177,10 @@
   };
 
   Root.prototype.alter = function() {
-    var args = Array.prototype.slice.call(arguments),
-        out = [];
-    for (var i = 0; i < args.length; i++) {
-      if (typeof args[i] === 'string') {
-        out.push(args[i]);
-      }
-    }
-    this.classes.push(out);
+    var args = Array.prototype.slice.call(arguments);
+    this.classes.push(cleanArray(args, function(item) {
+      return typeof item === 'string';
+    }));
     return this;
   };
 
@@ -187,14 +189,10 @@
   };
 
   Root.prototype.then = function(fn) {
-    var args = Array.prototype.slice.call(arguments),
-        out = [];
-    for (var i = 0; i < args.length; i++) {
-      if (typeof args[i] === 'function') {
-        out.push(args[i]);
-      }
-    }
-    this.callbacks.push(out);
+    var args = Array.prototype.slice.call(arguments);
+    this.callbacks.push(cleanArray(args, function(item) {
+      return typeof item === 'function';
+    }));
     return this;
   };
 
@@ -274,7 +272,7 @@
 
     var transitionCallback = function(e) {
       if (els.indexOf(e.target) !== -1 &&
-          isInArray(cleanArray(classes), classesFrom(e.target)) &&
+          isInArray(removeNegationClasses(classes), classesFrom(e.target)) &&
           hasFulfilledAllTransitions(e)) {
         len--;
         if (len <= 0) {
@@ -313,14 +311,10 @@
   };
 
   function Preloader() {
-    var args = Array.prototype.slice.call(arguments),
-        out = [];
-    for (var i = 0; i < args.length; i++) {
-      if (typeof args[i] === 'string') {
-        out.push(args[i]);
-      }
-    }
-    this.src = out;
+    var args = Array.prototype.slice.call(arguments);
+    this.src = cleanArray(args, function(item) {
+      return typeof item === 'string';
+    });
     this.callbacks = [];
     this.individualCallbacks = [];
   }
