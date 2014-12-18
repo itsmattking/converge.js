@@ -1,5 +1,4 @@
-converge.js
-===========
+# converge.js
 
 A library for chaining CSS transitions and callbacks.
 
@@ -9,8 +8,7 @@ A library for chaining CSS transitions and callbacks.
 Instead of directly manipulating CSS properties of elements, converge.js expects the transitions
 to be applied via CSS declarations, then triggered by manipulation of classes on the DOM.
 
-Usage
-=====
+## Usage
 
 First, pass in a DOM selector, an array of elements, or a NodeList.
 
@@ -36,23 +34,21 @@ You must call `run` at the end of your chain to kick it off:
 
 	.run();
 
-Waiting and continuing
-======================
+### Waiting and resuming
 
 The callback function you specify in `then` will get an event object that has a `wait` method.
-This will pause the events and wait for you to continue them yourself. It's handy if you
+This will pause the events and wait for you to resume them yourself. It's handy if you
 have other asynchronous things you want to do after a transition.
 
 	converge.on('div.box').alter('open').then(function(e) {
-      e.wait(); // stop the chain and continue when you need to (good for async functions)
+      e.wait(); // stop the chain and resume when you need to (good for async functions)
       net.json.get('/my/endpoint', function(data) {
         // do something with data...
-        e.continue();
+        e.resume();
       });
     }).run();
 
-Timing
-======
+### Timing
 
 You can alter timing of the application of classes by using the `stagger` method.
 
@@ -72,8 +68,7 @@ achieve this by adding a `transition-delay` declaration in your CSS.
 	// ...
 	}).run();
 
-Preloading Images
-=================
+### Preloading Images
 
 A utility for preloading images is included in converge.js. Preloading images is handy when you
 want to reveal or transition images, but only after they are fully downloaded.
@@ -81,11 +76,9 @@ want to reveal or transition images, but only after they are fully downloaded.
 	// Preload an image and then transition it in
 	converge.preload('/path-to-large-image.jpg').thenOn('img.large').alter('open');
 	
-Tips and Troubleshooting
-========================
+## Tips and Troubleshooting
 
-CSS Declarations
-----------------
+### CSS Declarations
 
 Converge.js needs to know which properties to watch and wait for, so when declaring CSS transitions,
 be sure that you are explicit:
@@ -116,14 +109,12 @@ a CSS framework to generate them for you.
 		transition: transform .3s ease-in-out;
 	}
 	
-Demo
-====
+## Demo
 
 Files in `demo/` show some ways to use converge.js. You can also change into the `demo/` directory and
 execute `run.sh` and browse to http://127.0.0.1:8080/.
 
-Developing
-==========
+## Developing
 
 You'll need node installed to develop converge.js. Just clone the repo and run `npm install` to get set up.
 
