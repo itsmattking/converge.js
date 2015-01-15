@@ -18,6 +18,14 @@ Then specify the CSS class of the elements you want to alter:
 
 	.alter('open')
 	
+To *remove* a class, use a `-`:
+
+	.alter('-open')
+	
+For multiple classes, just pass multiple arguments; they will be altered in order:
+
+	.alter('open', 'otherclass')
+	
 Finally, specify a function you want to run after the transitions are finished.
 
 	.then(function(e, elements) {
