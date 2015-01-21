@@ -43,6 +43,13 @@ function(Preloader,
     return this;
   };
 
+  RootWrapper.prototype.delay = function() {
+    this.currentRoot().delay.apply(this.currentRoot(),
+      Array.prototype.slice.call(arguments)
+    );
+    return this;
+  };
+
   RootWrapper.prototype.then = function() {
     this.currentRoot().then.apply(this.currentRoot(),
       Array.prototype.slice.call(arguments)

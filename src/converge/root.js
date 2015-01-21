@@ -33,6 +33,7 @@ function(utils,
       this.els = Array.prototype.slice.call(els);
     }
     this.parent = utils.findCommonParent(this.els);
+    this.willTransition = utils.willTransition(this.els);
   };
 
   Root.prototype.alter = function() {
@@ -55,14 +56,16 @@ function(utils,
     return this;
   };
 
-  Root.prototype.stagger = function(ms, buff) {
-    if (!constants.TRANSITIONABLE) {
-      ms = buff = 0;
-    } else {
-      ms = ms || 0;
-      buff = buff || 0;
-    }
-    this.timings.push([ms, buff]);
+  Root.prototype.stagger = function(ms, delayMs) {
+    ms = ms || 0;
+    delayMs = delayMs || 0;
+    this.timings.push([ms, delayMs]);
+    return this;
+  };
+
+  Root.prototype.delay = function(ms) {
+    ms = ms || 0;
+    this.timings.push([0, ms]);
     return this;
   };
 
@@ -81,7 +84,8 @@ function(utils,
         timing = this.timings[current] || [0, 0],
         els = this.els,
         len = this.els.length,
-        self = this;
+        self = this,
+        willTransition = this.willTransition;
 
     var nextRun = function() {
       if (current + 1 < total) {
@@ -142,6 +146,7 @@ function(utils,
     };
 
     var alterClasses = function() {
+      var finished = 0;
       var createHandler = function(el) {
           return function() {
             for (var j = 0; j < classes.length; j++) {
@@ -151,20 +156,25 @@ function(utils,
                 utils.addClass(el, classes[j]);
               }
             }
+            if (!willTransition) {
+              finished++;
+              if (finished >= els.length && !willTransition) {
+                runCallbacks();
+              }
+            }
           };
         };
+
       for (var i = 0; i < els.length; i++) {
         window.setTimeout(createHandler(els[i]), (i * timing[0]) + timing[1]);
       }
     };
 
-    if (constants.TRANSITIONABLE) {
+    if (this.willTransition) {
       parent.addEventListener(constants.TRANSITION_EVENT, transitionCallback);
-      window.setTimeout(alterClasses, 15);
-    } else {
-      alterClasses();
-      runCallbacks();
     }
+
+    window.setTimeout(alterClasses, 15);
 
     return null;
 

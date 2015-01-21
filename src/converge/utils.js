@@ -19,6 +19,22 @@ function(constants) {
     return out;
   }
 
+  function willTransition(els) {
+    if (!constants.TRANSITIONABLE) {
+      return false;
+    }
+
+    els = els || [];
+    var check = false;
+    for (var i = 0; i < els.length; i++) {
+      if (findTransitionProperties(els[i]).length) {
+        check = true;
+        break;
+      }
+    }
+    return check;
+  }
+
   function addClass(el, cls) {
     if (el.classList) {
       el.classList.add(cls);
@@ -109,7 +125,8 @@ function(constants) {
     cleanArray: cleanArray,
     removeNegationClasses: removeNegationClasses,
     isInArray: isInArray,
-    findCommonParent: findCommonParent
+    findCommonParent: findCommonParent,
+    willTransition: willTransition
   };
 
 });

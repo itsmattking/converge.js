@@ -76,6 +76,12 @@ achieve this by adding a `transition-delay` declaration in your CSS.
 	// ...
 	}).run();
 
+Also note that there is a `delay` function as well to add delays to applying classes:
+
+	converge.on('div.box').delay(1000).alter('open').then(function(e) {
+	// ...
+	}).run();
+
 ### Preloading Images
 
 A utility for preloading images is included in converge.js. Preloading images is handy when you
@@ -117,6 +123,15 @@ a CSS framework to generate them for you.
 		transition: transform .3s ease-in-out;
 	}
 	
+## Running in unsupported browsers or applying to non-transitioned elements
+
+Converge.js will gracefully handle running in browsers without CSS transition support, as well as
+running on elements that have no transitions defined, by altering the requested class names and 
+running the callbacks as normal.
+
+Timing defined with `stagger` and `delay` will also be respected when in unsupported/non-transitioned
+situations.
+
 ## Demo
 
 Files in `demo/` show some ways to use converge.js. You can also change into the `demo/` directory and
