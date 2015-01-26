@@ -8,12 +8,10 @@ A library for chaining CSS transitions and callbacks.
 Instead of directly manipulating CSS properties of elements, converge.js expects the transitions
 to be applied via CSS declarations, then triggered by manipulation of classes on the DOM.
 
-## Demo
+## CodePen [live demo is here](http://codepen.io/mattking17/pen/ByZMEK/left/?editors=011)
 
-Visit [the live demo on CodePen](http://codepen.io/mattking17/pen/ByZMEK/left/?editors=011), or run from the repo. The files in `demo/`
-show some ways to use converge.js. Change into the `demo/` directory, execute `run.sh` and
+THere are also examples in `demo/`. Change into the `demo/` directory, execute `run.sh` and
 browse to http://127.0.0.1:8080/.
-
 
 ## Usage
 
