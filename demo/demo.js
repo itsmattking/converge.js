@@ -15,10 +15,9 @@
     var elements = [];
     for (var i = 0; i < num; i++) {
       var c = document.createElement('div');
-      c.classList.add('entity');
-      c.classList.add(randomColor());
+      c.className = 'entity ' + randomColor();
       c.style.width = c.style.height = (randomWhole(200) + 10) + 'px';
-      c.style.left = randomWhole(window.innerWidth) + 'px';
+      c.style.left = randomWhole(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) + 'px';
       c.style.top = '50%';
       c.style.marginTop = (-(parseInt(c.style.width, 10)/2)) + 'px';
       elements.push(c);

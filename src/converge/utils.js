@@ -1,6 +1,7 @@
 define('converge/utils',
 
-       ['converge/constants'],
+       ['converge/constants',
+        'converge/shims'],
 
 function(constants) {
 
@@ -36,28 +37,36 @@ function(constants) {
   }
 
   function addClass(el, cls) {
-    if (el.classList) {
-      el.classList.add(cls);
-    } else {
-      el.className = classesFrom(el).concat(cls).join(' ');
+    if (el && cls) {
+      if (el.classList) {
+        el.classList.add(cls);
+      } else {
+        el.className = classesFrom(el).concat(cls).join(' ');
+      }
     }
   }
 
   function removeClass(el, cls) {
-    if (el.classList) {
-      el.classList.remove(cls);
-    } else {
-      el.className = cleanArray(classesFrom(el), function(item) {
-        return item !== cls;
-      }).join(' ');
+    if (el && cls) {
+      if (el.classList) {
+        el.classList.remove(cls);
+      } else {
+        el.className = cleanArray(classesFrom(el), function(item) {
+          return item !== cls;
+        }).join(' ');
+      }
     }
   }
 
   function classesFrom(el) {
-    if (el.classList) {
-      return Array.prototype.slice.call(el.classList);
+    if (el) {
+      if (el.classList) {
+        return Array.prototype.slice.call(el.classList);
+      } else {
+        return el.className.split(/\s+/);
+      }
     } else {
-      return el.className.split(/\s+/);
+      return [];
     }
   }
 
@@ -88,7 +97,7 @@ function(constants) {
 
   function parentAt(el, level) {
     for (var i = 0; i < level; i++) {
-      if (!el.parentNode || el === document.body) {
+      if (!el || !el.parentNode || el === document.body) {
         break;
       }
       el = el.parentNode;

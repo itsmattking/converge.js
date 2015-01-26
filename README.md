@@ -12,7 +12,10 @@ to be applied via CSS declarations, then triggered by manipulation of classes on
 
 First, pass in a DOM selector, an array of elements, or a NodeList.
 
-    converge.on('div.box')
+    converge.on('div.box') // selector style
+	converge.on(document.querySelectorAll('div.box')) // a list of elements from querySelectorAll
+	converge.on($('div.box')) // a list of elements from jQuery
+	converge.on(myElements) // a list of elements you already have
 	
 Then specify the CSS class of the elements you want to alter:
 
@@ -123,15 +126,23 @@ a CSS framework to generate them for you.
 		transition: transform .3s ease-in-out;
 	}
 	
-## Running in unsupported browsers or applying to non-transitioned elements
+## Browser support
+
+### Running in browsers with transition support, or applying to non-transitioned elements
 
 Converge.js will gracefully handle running in browsers without CSS transition support, as well as
 running on elements that have no transitions defined, by altering the requested class names and 
-running the callbacks as normal.
+running the callbacks as normal. Timing defined with `stagger` and `delay` will also be respected
+when in unsupported/non-transitioned situations.
 
-Timing defined with `stagger` and `delay` will also be respected when in unsupported/non-transitioned
-situations.
+### IE 7 support
 
+IE 7 does not support `querySelectorAll` which is what converge.js uses when passed a selector string
+to the `.on` method. If you care about IE 7 support, pass a selection of elements instead of a selector string,
+for example with jQuery:
+
+	converge.on($('.box'))
+	
 ## Demo
 
 Files in `demo/` show some ways to use converge.js. You can also change into the `demo/` directory and

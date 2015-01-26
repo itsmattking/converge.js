@@ -19,7 +19,7 @@ function(utils,
   Root.prototype.processElements = function(els) {
     if (typeof els === 'string') {
       var found = document.querySelectorAll(els);
-      if (found.length === 0) {
+      if (found && found.length === 0) {
         this.els = [];
         if ((typeof this.deferredEls === 'undefined')) {
           this.deferredEls = els;
@@ -27,13 +27,15 @@ function(utils,
           this.deferredEls = null;
         }
       } else {
-        this.els = Array.prototype.slice.call(found);
+        this.els = Array.prototype.slice.call(found || []);
       }
     } else {
       this.els = Array.prototype.slice.call(els);
     }
-    this.parent = utils.findCommonParent(this.els);
     this.willTransition = utils.willTransition(this.els);
+    if (this.willTransition) {
+      this.parent = utils.findCommonParent(this.els);
+    }
   };
 
   Root.prototype.alter = function() {
