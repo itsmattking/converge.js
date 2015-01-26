@@ -10,7 +10,7 @@ to be applied via CSS declarations, then triggered by manipulation of classes on
 
 ## CodePen [live demo is here](http://codepen.io/mattking17/pen/ByZMEK/left/?editors=011)
 
-THere are also examples in `demo/`. Change into the `demo/` directory, execute `run.sh` and
+There are also examples in `demo/`. Change into the `demo/` directory, execute `run.sh` and
 browse to http://127.0.0.1:8080/.
 
 ## Usage
