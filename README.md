@@ -128,7 +128,7 @@ a CSS framework to generate them for you.
 	
 ## Browser support
 
-### Running in browsers with transition support, or applying to non-transitioned elements
+### Running in browsers without transition support/applying to non-transitioned elements
 
 Converge.js will gracefully handle running in browsers without CSS transition support, as well as
 running on elements that have no transitions defined, by altering the requested class names and 
