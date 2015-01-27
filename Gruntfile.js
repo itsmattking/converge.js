@@ -42,6 +42,20 @@ module.exports = function(grunt) {
           }
         }
       },
+      compileNoCompress: {
+        options: {
+          almond: true,
+          name: '../node_modules/almond/almond',
+          baseUrl: "src",
+          out: "./dist/converge.nocompress.js",
+          optimize: 'none',
+          include: ["converge"],
+          wrap: {
+            startFile: ["./build/start.frag"],
+            endFile: "./build/end.frag"
+          }
+        }
+      },
       compileForTest: {
         options: {
           almond: true,
@@ -127,6 +141,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-express');
 
   grunt.registerTask('test', ['jshint', 'requirejs:compile', 'requirejs:compileForTest', 'qunit', 'clean']);
+  grunt.registerTask('buildNoCompress', ['jshint', 'requirejs:compileNoCompress', 'requirejs:compileForTest', 'qunit', 'clean']);
   grunt.registerTask('build', ['express', 'test']);
   grunt.registerTask('default', ['express', 'watch']);
 };
