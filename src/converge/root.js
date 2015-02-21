@@ -29,6 +29,8 @@ function(utils,
       } else {
         this.els = Array.prototype.slice.call(found || []);
       }
+    } else if ((els instanceof window.Node)) {
+      this.els = [els];
     } else {
       this.els = Array.prototype.slice.call(els);
     }
